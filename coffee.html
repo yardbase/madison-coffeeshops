@@ -27,6 +27,12 @@
     q.execute(function(places) {
       var infowindow = new google.maps.InfoWindow();
       var geocoder = new google.maps.Geocoder();
+
+
+      // map: an instance of GMap3
+      // latlng: an array of instances of GLatLng
+      var latlngbounds = new google.maps.LatLngBounds();
+
       for (var i = 0; i < places.length; i++) {
         console.log(places[i].location)
 
@@ -34,11 +40,13 @@
         if(!places[i].wifi.free) {
           icon = 'nowifi.png'
         }
+        var position = new google.maps.LatLng(places[i].location.lat, places[i].location.lng)
         var marker = new google.maps.Marker({
           map: map,
-          position: new google.maps.LatLng(places[i].location.lat, places[i].location.lng),
+          position: position,
           icon: icon
         });
+        latlngbounds.extend(position);
 
         map.setCenter(new google.maps.LatLng(places[i].location.lat, places[i].location.lng));
         google.maps.event.addListener(marker, 'click', (function(marker, i) {
@@ -48,9 +56,12 @@
           }
         })(marker, i));
       }
+
+      map.setCenter(latlngbounds.getCenter());
+      map.fitBounds(latlngbounds); 
     });
     var map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 10,
+      zoom: 13,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     });
   </script>
